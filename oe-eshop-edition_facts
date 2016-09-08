@@ -1,0 +1,51 @@
+#!/bin/bash
+
+[ -z $ESHOP_FACTS ] && echo "Please run this script through oe-eshop-facts, e.g. ./oe-eshop-facts $0" && exit 1
+. $ESHOP_FACT_BIN_PATH
+
+function main {
+    get_input_values
+    display_input_values
+    export_input_values
+}
+
+function get_input_values {
+    local ESHOP_PE_SUFFIX="oxideshop-pe"
+    local ESHOP_EE_SUFFIX="oxideshop-ee"
+    local GET_EDITION_SCRIPT_NAME="oe-eshop-edition"
+
+    : ${ESHOP_PE_ROOT_PATH:=$(get_existing_full_path_name "$ESHOP_VENDOR_PATH/$ESHOP_VENDOR_NAME/$ESHOP_PE_SUFFIX")}
+    : ${ESHOP_EE_ROOT_PATH:=$(get_existing_full_path_name "$ESHOP_VENDOR_PATH/$ESHOP_VENDOR_NAME/$ESHOP_EE_SUFFIX")}
+    : ${ESHOP_GET_EDITION_SCRIPT_PATH:=$(get_existing_full_path_name "$ESHOP_VENDOR_BIN_PATH/$GET_EDITION_SCRIPT_NAME")}
+    : ${ESHOP_EDITION:=$(ESHOP_BOOTSTRAP_PATH="$ESHOP_BOOTSTRAP_PATH" $ESHOP_PHP_BIN_PATH $ESHOP_GET_EDITION_SCRIPT_PATH)}
+    : ${MIGRATION_SUITE:=""}
+}
+
+function display_input_values {
+    [ "$ESHOP_VERBOSE_EDITION_FACTS_DISPLAYED" == "1" ] && return 0
+
+    if [ ! -z "$VERBOSE" ] || [ ! -z "$ESHOP_VERBOSE_EDITION_FACTS"] ; then
+        print_variables_header "$BASH_SOURCE"
+        echo -e "\tESHOP_PE_ROOT_PATH: $ESHOP_PE_ROOT_PATH"
+        echo -e "\tESHOP_EE_ROOT_PATH: $ESHOP_EE_ROOT_PATH"
+        echo -e "\tESHOP_GET_EDITION_SCRIPT_PATH: $ESHOP_GET_EDITION_SCRIPT_PATH"
+        echo -e "\tESHOP_EDITION: $ESHOP_EDITION"
+        echo -e "\tMIGRATION_SUITE: $MIGRATION_SUITE"
+        echo ""
+
+        ESHOP_VERBOSE_EDITION_FACTS_DISPLAYED="1"
+        export ESHOP_VERBOSE_EDITION_FACTS_DISPLAYED="1"
+    fi
+}
+
+function export_input_values {
+    [ ! -z "$VERBOSE" ] && export VERBOSE="$VERBOSE"
+
+    export ESHOP_PE_ROOT_PATH="$ESHOP_PE_ROOT_PATH"
+    export ESHOP_EE_ROOT_PATH="$ESHOP_EE_ROOT_PATH"
+    export ESHOP_GET_EDITION_SCRIPT_PATH="$ESHOP_GET_EDITION_SCRIPT_PATH"
+    export ESHOP_EDITION="$ESHOP_EDITION"
+    export MIGRATION_SUITE="$MIGRATION_SUITE"
+}
+
+main

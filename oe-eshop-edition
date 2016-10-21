@@ -16,7 +16,7 @@ if (!(file_exists($bootstrapFileName) && !is_dir($bootstrapFileName))) {
 
 require_once($bootstrapFileName);
 
-use OxidEsales\Eshop\Core\Edition\EditionSelector;
+use OxidEsales\EshopCommunity\Core\Edition\EditionSelector;
 
 $editionSelector = new EditionSelector();
 echo $editionSelector->getEdition();
